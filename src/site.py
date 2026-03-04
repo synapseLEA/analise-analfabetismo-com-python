@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import streamlit as st
 from analise import *
 
@@ -109,5 +111,6 @@ else:
     grafico_comparativo.warning("Por favor, selecione mais de um município para continuar.")
 
 
+caminho_logo = Path.cwd() / 'img' / 'logo.png'
 redes_sociais = st.container(border=True)
-redes_sociais.image("logo.png")
+redes_sociais.image(caminho_logo)

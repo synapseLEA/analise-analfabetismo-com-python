@@ -1,12 +1,12 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from limpeza import dataset_limpo
+from limpeza import limpezaDataframe
 from pandas import DataFrame
 
 sns.set_theme(style="whitegrid")
 sns.set_palette("muted")
-df = dataset_limpo()
+df = limpezaDataframe()
 
 def visualizar_tabela(numero_linhas:int) -> DataFrame:
     return df.head(numero_linhas)
@@ -198,7 +198,7 @@ def grafico_progressao_municipios(municipios:str):
         marker="o",
         linestyle="--"
     )
-    for posicao, linha in df_agrupado_municipios.iterrows():
+    for _, linha in df_agrupado_municipios.iterrows():
         ax.text(
             x=linha["Ano"],
             y=linha["Taxa"] + 1.5,

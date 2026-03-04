@@ -1,7 +1,10 @@
+import os
+
 import pandas as pd
 from pandas import DataFrame
+from pathlib import Path
 
-def dataset_limpo() -> DataFrame:
+def limpezaDataframe() -> DataFrame:
     """
     Realiza a limpeza, transformação e a engenharia de atributos no conjunto de dados.
 
@@ -16,7 +19,8 @@ def dataset_limpo() -> DataFrame:
     """
     
     # Carrega o arquivo CSV usando ponto e vírgula como separador e vírgula como decimal
-    df = pd.read_csv("bancodados.csv", sep=";", decimal=",")
+    caminho_dataframe = Path.cwd() / 'data' / 'dados_analfabetismo_municipios.csv'
+    df = pd.read_csv(caminho_dataframe, sep=";", decimal=",")
     
     # Remove a primeira linha do DataFrame, que contém dados irrelevantes
     df = df.drop(0, axis=0)
@@ -42,12 +46,11 @@ def dataset_limpo() -> DataFrame:
     colunas_anos = ["1991 (%)", "2000 (%)", "2010 (%)", "2022 (%)"]
     
     # Calcula o percentual médio de não alfabetizados para cada município e cria uma nova coluna
-    df["Percentual Médio de não Alfabetizados"] = df[colunas_anos].mean(axis=1)
+    df["Percentual Médio de não Alfabetizados"] = df[colunas_anos].mean(axis=1).round(2)
     
     # Calcula o percentual médio de alfabetizados subtraindo o valor anterior de 100 e cria uma nova coluna
-    df["Percentual Médio de Alfabetizados"] = 100 - df["Percentual Médio de não Alfabetizados"]
+    df["Percentual Médio de Alfabetizados"] = (100 - df["Percentual Médio de não Alfabetizados"]).round(2)
     
     # Retorna o DataFrame limpo e com as novas colunas
     return df
-
 
