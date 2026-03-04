@@ -6,7 +6,7 @@ from analise import *
 st.title("Análise de Dados Sociais com Python")
 
 descricao = st.container(border=True)
-descricao.text("Esta aplicação web foi desenvolvida com o proprósito de facilitar a visualização e manipulação de dados sociais, enfatizando a taxa de analfabetismo da população de 15 anos ou mais por município do maranhão.")
+descricao.text("Esta aplicação web foi desenvolvida com o propósito de facilitar a visualização e manipulação de dados sociais, enfatizando a taxa de analfabetismo da população de 15 anos ou mais por município do maranhão.")
 
 st.subheader("Visualização dos Dados")
 visualizacao_dados = st.container(border=True)
@@ -69,7 +69,7 @@ st.pyplot(
 )
 
 st.subheader(
-    "Visualização da Distribuição dos Valores Númericos de Cada Ano"
+    "Visualização da Distribuição dos Valores Numéricos de Cada Ano"
 )
 st.pyplot(
     fig=distribuicao_anos(),
