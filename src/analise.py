@@ -1,7 +1,7 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from limpeza import limpezaDataframe
+from limpeza import Path, limpezaDataframe
 from pandas import DataFrame
 
 sns.set_theme(style="whitegrid")
@@ -213,5 +213,3 @@ def grafico_progressao_municipios(municipios:str):
     ax.set_xlabel("Ano")
     ax.set_ylabel("Taxa de Analfabetismo (%)")
     return fig
-    
-    
