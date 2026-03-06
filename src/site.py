@@ -17,7 +17,7 @@ linhas_visualizacao = visualizacao_dados.number_input(
     value=5
 )
 visualizacao_dados.dataframe(visualizar_tabela(linhas_visualizacao))
-visualizacao_dados.download_button(label="Baixar dados tratados", data = df.to_csv(), file_name = 'dataframe_analfabetismo_tratado')
+visualizacao_dados.download_button(label="Baixar dados tratados", data = df.to_csv(index=False), file_name = 'dataframe_analfabetismo_tratado')
 
 st.subheader("Visualização Gráfica Percentual de cada Município")
 visualizacao_grafica_percentual = st.container(border=True)
@@ -112,6 +112,7 @@ else:
     grafico_comparativo.warning("Por favor, selecione mais de um município para continuar.")
 
 
-caminho_logo = Path.cwd() / '..' /'img' / 'logo.png'
+diretorio_arquivo = Path(__file__).resolve().parent
+caminho_logo = diretorio_arquivo / '..' / 'img' / 'logo.png'
 redes_sociais = st.container(border=True)
 redes_sociais.image(caminho_logo)

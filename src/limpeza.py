@@ -19,7 +19,8 @@ def limpezaDataframe() -> DataFrame:
     """
     
     # Carrega o arquivo CSV usando ponto e vírgula como separador e vírgula como decimal
-    caminho_dataframe = Path.cwd() / '..' /'data' / 'dados_analfabetismo_municipios.csv'
+    diretorio_arquivo = Path(__file__).resolve().parent
+    caminho_dataframe = diretorio_arquivo / '..' / 'data' / 'dados_analfabetismo_municipios.csv'
     df = pd.read_csv(caminho_dataframe, sep=";", decimal=",")
     
     # Remove a primeira linha do DataFrame, que contém dados irrelevantes
