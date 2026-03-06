@@ -55,3 +55,22 @@ def limpezaDataframe() -> DataFrame:
     # Retorna o DataFrame limpo e com as novas colunas
     return df
 
+def dataframe_modificado_ml() -> DataFrame:
+    df = limpezaDataframe()
+    colunas_remover = ['Município',
+                   'Sigla',
+                   'Código',
+                   'Percentual Médio de Alfabetizados']
+    colunas_renomear = {
+        '1991 (%)' : '1991',
+        '2000 (%)' : '2000',
+        '2010 (%)' : '2010',
+        '2022 (%)' : '2022'
+    }
+    df = df.drop(columns=colunas_remover, axis = 1)
+    df = df.rename(columns=colunas_renomear)
+    df_alterado = df.melt(id_vars = 'Percentual Médio de não Alfabetizados',
+                  value_name = 'Taxa', var_name= 'Ano')
+    df_alterado['Ano'] = df_alterado['Ano'].astype(int)
+    return df_alterado
+

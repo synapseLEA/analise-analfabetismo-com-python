@@ -1,8 +1,15 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from limpeza import Path, limpezaDataframe
+from limpeza import Path, dataframe_modificado_ml, limpezaDataframe
 from pandas import DataFrame
+from sklearn.metrics import r2_score, mean_absolute_error
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 sns.set_theme(style="whitegrid")
 sns.set_palette("muted")
@@ -212,4 +219,88 @@ def grafico_progressao_municipios(municipios:str):
     ax.set_title(f"Taxa de Analfabetismo entre os Municípios {municipios_str}")    
     ax.set_xlabel("Ano")
     ax.set_ylabel("Taxa de Analfabetismo (%)")
+    return fig
+
+def conjunto_treino_teste():
+    df_alterado = dataframe_modificado_ml()
+    X = df_alterado.drop(columns='Taxa', axis = 1)
+    y = df_alterado['Taxa']
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size = 0.2, random_state = 42
+    )
+    return X_train, X_test, y_train, y_test
+
+def modelo_regressao_linear():
+    fig, axs = plt.subplots(figsize=(12,5))
+    X_train, X_test, y_train, y_test = conjunto_treino_teste()
+    LR = LinearRegression()
+    LR.fit(X_train, y_train)
+    LR_pred = LR.predict(X_test)
+    mse = mean_absolute_error(y_test, LR_pred)
+    r2 = r2_score(y_test, LR_pred)
+    sns.regplot(x = y_test, y = LR_pred, line_kws={'color' : 'red'})
+    axs.set_xlabel("Valores Reais")
+    axs.set_ylabel("Valores Previstos")
+    axs.set_title("Previsão com o modelo de Regressão Linear Simples")
+    return mse, r2, fig
+
+def modelo_arvore_decisao():
+    fig, axs = plt.subplots(figsize=(12,5))
+    X_train, X_test, y_train, y_test = conjunto_treino_teste()
+    DT = DecisionTreeRegressor(
+    criterion = 'squared_error',
+    random_state = 42
+    )
+    DT.fit(X_train, y_train)
+    DT_pred = DT.predict(X_test)
+    mse = mean_absolute_error(y_test, DT_pred)
+    r2 = r2_score(y_test, DT_pred)
+    sns.regplot(x = y_test, y = DT_pred, line_kws={'color' : 'red'})
+    axs.set_xlabel("Valores Reais")
+    axs.set_ylabel("Valores Previstos")
+    axs.set_title("Previsão com o modelo de Árvore de Decisão")
+    return mse, r2, fig
+
+def modelo_random_forest():
+    fig, axs = plt.subplots(figsize=(12,5))
+    X_train, X_test, y_train, y_test = conjunto_treino_teste()
+    RF = RandomForestRegressor(
+        n_estimators = 100,
+        criterion = 'squared_error',
+        random_state = 42
+    )
+    RF.fit(X_train, y_train)
+    RF_pred = RF.predict(X_test)
+    mse = mean_absolute_error(y_test, RF_pred)
+    r2 = r2_score(y_test, RF_pred)
+    sns.regplot(x = y_test, y = RF_pred, line_kws={'color' : 'red'})
+    axs.set_xlabel("Valores Reais")
+    axs.set_ylabel("Valores Previstos")
+    axs.set_title("Previsão com o modelo de Random Forest")
+    return mse, r2, fig, RF
+
+def previsao_taxa_analfabetismo(nome_municipio: str, ano_previsao: int):
+    dataframe_original = limpezaDataframe()
+    dados_municipio = dataframe_original[dataframe_original['Município'] == nome_municipio]
+    media_analfabetismo = dados_municipio['Percentual Médio de não Alfabetizados'].values[0]
+    dados_previsao = pd.DataFrame(
+        {'Percentual Médio de não Alfabetizados': [media_analfabetismo],
+        'Ano': [ano_previsao]}
+    )
+    previsao = modelo_random_forest()[-1].predict(dados_previsao)
+    taxa_prevista = previsao[0]
+    return media_analfabetismo, taxa_prevista
+
+def grafico_previsao(nome_municipio: str, ano_previsao: int):
+    fig, axs = plt.subplots(figsize=(17, 8))
+    df_melt = dataframe_modificado_ml()
+    media_analfabetismo, taxa_prevista = previsao_taxa_analfabetismo(nome_municipio, ano_previsao)
+    dados_historicos = df_melt[df_melt['Percentual Médio de não Alfabetizados'] == media_analfabetismo]
+    axs.plot(dados_historicos['Ano'], dados_historicos['Taxa'], 'o-', label='Dados Históricos', linewidth=2)
+    axs.plot(ano_previsao, taxa_prevista, 'rs', label=f'Previsão {ano_previsao}', markersize=10)
+    axs.set_xlabel('Ano')
+    axs.set_ylabel('Taxa de Analfabetismo (%)')
+    axs.set_title(f'Taxa de Analfabetismo - {nome_municipio}')
+    axs.legend()
+    axs.grid(True, alpha=0.3)
     return fig

@@ -37,7 +37,7 @@ linhas = visualizacao_grafica_percentual.number_input(
     max_value=quantidade_linhas()
 )
 
-st.pyplot(
+visualizacao_grafica_percentual.pyplot(
     fig=agrupamento_municipio_percentual(
         tipo,
         ordenacao,
@@ -61,7 +61,7 @@ ordenacao = distribuicao.radio(
     options=["Crescente","Decrescente"],
     key=2
 )
-st.pyplot(
+distribuicao.pyplot(
     fig=distribuicao_alfabetismo_analfabetismo_munipicios(
         ordenacao,
         linhas
@@ -86,7 +86,7 @@ municipio_escolhido = progressao_analfabetismo.selectbox(
     options=nomes_municipios(),
     key=3
 )
-st.pyplot(
+progressao_analfabetismo.pyplot(
     fig=grafico_progressao_unico_municipio(
         municipio_escolhido
     ),
@@ -104,7 +104,7 @@ municipios_escolhidos = grafico_comparativo.multiselect(
     default=["São Luís", "Imperatriz"]
 )
 if(len(municipios_escolhidos) > 1):
-    st.pyplot(
+    grafico_comparativo.pyplot(
         fig=grafico_progressao_municipios(municipios_escolhidos),
         width="stretch"
     )
@@ -112,6 +112,96 @@ else:
     grafico_comparativo.warning("Por favor, selecione mais de um município para continuar.")
 
 
+# Funcionalidades novas referentes a segunda versão do projeto
+
+st.subheader(
+    "Aplicação de Algoritmos de Regressão para Previsão da Taxa do Analfabetismo nos Anos Posteriores"
+)
+sessao_algoritmos_regressao = st.container(border=True)
+sessao_algoritmos_regressao.warning(
+    """
+    Todos os modelos de aprendizado de máquina foram implementados utilizando a biblioteca Scikit-learn (sklearn). 
+    Os dados foram divididos em conjuntos de treino e teste, utilizando 80% para treinamento e 20% para teste.
+
+    As métricas utilizadas para avaliar e selecionar o melhor modelo foram:
+
+    - **MSE (Mean Squared Error - Erro Quadrático Médio)**: Esta métrica calcula a média dos quadrados dos erros, ou seja, a diferença quadrática entre os valores preditos e os valores reais. O MSE é útil porque penaliza erros maiores de forma mais severa, dando maior peso aos outliers. Quanto menor o valor do MSE, melhor é o desempenho do modelo.
+
+    - **R² Score (Coeficiente de Determinação)**: Esta métrica indica a proporção da variância dos dados que é explicada pelo modelo. O R² varia de 0 a 1, onde valores mais próximos de 1 indicam que o modelo consegue explicar melhor a variabilidade dos dados. Em outras palavras, quanto maior o R², mais preciso é o modelo em suas predições.
+    """
+)
+sessao_algoritmos_regressao.markdown(
+    "**Aplicando Modelo de Regressão Linear Simples**"
+)
+sessao_regressao_linear = sessao_algoritmos_regressao.container(border=True)
+sessao_regressao_linear.pyplot(
+    fig = modelo_regressao_linear()[-1],
+    width="stretch"   
+)
+sessao_regressao_linear.markdown(
+    f"""
+    Resultados do Modelo:
+    - **MSE:** {modelo_regressao_linear()[0]:.2f}
+    - **R² :** {modelo_regressao_linear()[1] * 100:.2f} %
+    """
+)
+
+
+sessao_algoritmos_regressao.markdown(
+    "**Aplicando o Modelo de Árvore de Decisão**"
+)
+
+sessao_arvore_decisao = sessao_algoritmos_regressao.container(border=True)
+sessao_arvore_decisao.pyplot(
+    fig = modelo_arvore_decisao()[-1],
+    width="stretch"
+)
+sessao_arvore_decisao.markdown(
+    f"""
+    Resultados do Modelo:
+    - **MSE:** {modelo_arvore_decisao()[0]:.2f}
+    - **R² :** {modelo_arvore_decisao()[1] * 100:.2f} %
+    """
+)
+
+
+sessao_algoritmos_regressao.markdown(
+    "**Aplicando o Modelo de Random Forest**"
+)
+
+sessao_random_forest = sessao_algoritmos_regressao.container(border=True)
+sessao_random_forest.pyplot(
+    fig = modelo_random_forest()[-2],
+    width="stretch"
+)
+sessao_random_forest.markdown(
+    f"""
+    Resultados do Modelo:
+    - **MSE:** {modelo_random_forest()[0]:.2f}
+    - **R² :** {modelo_random_forest()[1] * 100:.2f} %
+    """
+)
+
+st.subheader("Previsão da Taxa de Analfabetismo")
+sessao_previsao_taxa = st.container(border = True)
+municipio_escolhido = sessao_previsao_taxa.selectbox(
+    "Seleciona qual o município que deseja realizar a previsão da taxa de analfabetismo",
+    options=nomes_municipios(),
+    key=4
+)
+ano_escolhido = sessao_previsao_taxa.number_input(
+    "Escolha o ano da previsão",
+    min_value = 2023
+)
+
+
+sessao_previsao_taxa.text(
+    f"Taxa prevista para o ano de {ano_escolhido}: {previsao_taxa_analfabetismo(municipio_escolhido, ano_escolhido)[-1]:.2f}%"
+)
+sessao_previsao_taxa.pyplot(
+    fig = grafico_previsao(municipio_escolhido, ano_escolhido),
+    width="stretch"
+)
 diretorio_arquivo = Path(__file__).resolve().parent
 caminho_logo = diretorio_arquivo / '..' / 'img' / 'logo.png'
 redes_sociais = st.container(border=True)
