@@ -10,6 +10,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import seaborn as sns
+from catboost import CatBoostRegressor
 
 sns.set_theme(style="whitegrid")
 sns.set_palette("muted")
@@ -278,6 +279,22 @@ def modelo_random_forest():
     axs.set_ylabel("Valores Previstos")
     axs.set_title("Previsão com o modelo de Random Forest")
     return mse, r2, fig, RF
+
+def modelo_catboost():
+    fig, axs = plt.subplots(figsize=(12,5))
+    X_train, X_test, y_train, y_test = conjunto_treino_teste()
+    CB = CatBoostRegressor()
+    CB.fit(X_train, y_train)
+    CB_pred = CB.predict(X_test)
+    mse = mean_absolute_error(y_test, CB_pred)
+    r2 = r2_score(y_test, CB_pred)
+    print(f'MSE: {mse}')
+    print(f'R2: {r2}')
+    sns.regplot(x = y_test, y = CB_pred, line_kws={'color' : 'red'})
+    axs.set_xlabel("Valores Reais")
+    axs.set_ylabel("Valores Previstos")
+    axs.set_title("Previsão com o modelo de Random Forest")
+    return mse, r2, fig, CB
 
 def previsao_taxa_analfabetismo(nome_municipio: str, ano_previsao: int):
     dataframe_original = limpezaDataframe()
