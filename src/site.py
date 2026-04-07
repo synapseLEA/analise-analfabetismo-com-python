@@ -2,6 +2,7 @@ from pathlib import Path
 
 import streamlit as st
 from analise import *
+from clusters import *
 
 st.title("Análise de Dados Sociais com Python")
 
