@@ -224,7 +224,7 @@ def grafico_progressao_municipios(municipios:str):
 
 def conjunto_treino_teste():
     df_alterado = dataframe_modificado_ml()
-    X = df_alterado.drop(columns='Taxa', axis = 1)
+    X = df_alterado.drop(columns='Taxa')
     y = df_alterado['Taxa']
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size = 0.2, random_state = 42

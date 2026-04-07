@@ -121,7 +121,7 @@ st.subheader(
 sessao_algoritmos_regressao = st.container(border=True)
 sessao_algoritmos_regressao.warning(
     """
-    Todos os modelos de aprendizado de máquina foram implementados utilizando a biblioteca Scikit-learn (sklearn). 
+    Todos os modelos de aprendizado de máquina foram implementados utilizando a biblioteca Scikit-learn (sklearn) e CatBoost. 
     Os dados foram divididos em conjuntos de treino e teste, utilizando 80% para treinamento e 20% para teste.
 
     As métricas utilizadas para avaliar e selecionar o melhor modelo foram:
@@ -203,7 +203,46 @@ sessao_previsao_taxa.pyplot(
     fig = grafico_previsao(municipio_escolhido, ano_escolhido),
     width="stretch"
 )
+
+df = clusterizacao(df)
+df, clusters_media = gruposclusters(df)
+grupos = grupos_alerta(df)
+
+st.subheader("Aplicação de Clusters Hierárquicos para Geração de Alertas")
+
+sessao_clusters = st.container(border=True)
+
+sessao_clusters.warning(
+    """
+    Aplicação de clusters hierárquicos para a criação de alertas para municípios em
+    diferentes grupos, com base no percentual médio de não alfabetizados.
+    """
+)
+
+grupo_escolhido = sessao_clusters.selectbox(
+    "Selecione um grupo",
+    options=list(grupos.keys()),
+    key="clusters_grupo"
+)
+
+sessao_grupo_cluster = sessao_clusters.container(border=True)
+
+sessao_grupo_cluster.subheader(f"Municípios em {grupo_escolhido}")
+
+sessao_grupo_cluster.dataframe(
+    grupos[grupo_escolhido][
+        [
+            "Município",
+            "Percentual Médio de não Alfabetizados",
+            "categoria_alerta",
+            "cluster",
+        ]
+    ],
+    width="stretch"
+)
+
 diretorio_arquivo = Path(__file__).resolve().parent
 caminho_logo = diretorio_arquivo / '..' / 'img' / 'logo.png'
 redes_sociais = st.container(border=True)
 redes_sociais.image(caminho_logo)
+

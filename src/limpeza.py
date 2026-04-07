@@ -67,7 +67,7 @@ def dataframe_modificado_ml() -> DataFrame:
         '2010 (%)' : '2010',
         '2022 (%)' : '2022'
     }
-    df = df.drop(columns=colunas_remover, axis = 1)
+    df = df.drop(columns=colunas_remover)
     df = df.rename(columns=colunas_renomear)
     df_alterado = df.melt(id_vars = 'Percentual Médio de não Alfabetizados',
                   value_name = 'Taxa', var_name= 'Ano')
