@@ -183,6 +183,23 @@ sessao_random_forest.markdown(
     """
 )
 
+sessao_algoritmos_regressao.markdown(
+    "**Aplicando o Modelo de Catboost**"
+)
+
+sessao_catboost = sessao_algoritmos_regressao.container(border=True)
+sessao_random_forest.pyplot(
+    fig = modelo_catboost()[-2],
+    width="stretch"
+)
+sessao_catboost.markdown(
+    f"""
+    Resultados do Modelo:
+    - **MSE:** {modelo_catboost()[0]:.2f}
+    - **R² :** {modelo_catboost()[1] * 100:.2f} %
+    """
+)
+
 st.subheader("Previsão da Taxa de Analfabetismo")
 sessao_previsao_taxa = st.container(border = True)
 municipio_escolhido = sessao_previsao_taxa.selectbox(
