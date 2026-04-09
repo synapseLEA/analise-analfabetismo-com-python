@@ -1,7 +1,7 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from limpeza import Path, dataframe_modificado_ml, limpezaDataframe
+from limpeza import Path, dataframe_modificado_ml, limpezaDataframe, dataframe_previsao
 from pandas import DataFrame
 from sklearn.metrics import r2_score, mean_absolute_error
 from sklearn.linear_model import LinearRegression
@@ -243,7 +243,9 @@ def modelo_regressao_linear():
     axs.set_xlabel("Valores Reais")
     axs.set_ylabel("Valores Previstos")
     axs.set_title("Previsão com o modelo de Regressão Linear Simples")
-    return mse, r2, fig
+
+    colunas_modelo = X_train.columns.tolist()
+    return mse, r2, fig, LR ,colunas_modelo
 
 def modelo_arvore_decisao():
     fig, axs = plt.subplots(figsize=(12,5))
@@ -278,7 +280,9 @@ def modelo_random_forest():
     axs.set_xlabel("Valores Reais")
     axs.set_ylabel("Valores Previstos")
     axs.set_title("Previsão com o modelo de Random Forest")
-    return mse, r2, fig, RF
+
+    colunas_modelo = X_train.columns.tolist()
+    return mse, r2, fig, RF, colunas_modelo
 
 def modelo_catboost():
     fig, axs = plt.subplots(figsize=(12,5))
@@ -297,23 +301,33 @@ def modelo_catboost():
     return mse, r2, fig, CB
 
 def previsao_taxa_analfabetismo(nome_municipio: str, ano_previsao: int):
-    dataframe_original = limpezaDataframe()
-    dados_municipio = dataframe_original[dataframe_original['Município'] == nome_municipio]
-    media_analfabetismo = dados_municipio['Percentual Médio de não Alfabetizados'].values[0]
-    dados_previsao = pd.DataFrame(
-        {'Percentual Médio de não Alfabetizados': [media_analfabetismo],
-        'Ano': [ano_previsao]}
-    )
-    previsao = modelo_random_forest()[-1].predict(dados_previsao)
-    taxa_prevista = previsao[0]
-    return media_analfabetismo, taxa_prevista
+    df = dataframe_previsao()
+
+    dados = df[df['Município'] == nome_municipio].sort_values('Ano')
+
+    if dados.empty:
+        raise ValueError("Município não encontrado")
+
+    X = dados[['Ano']]
+    y = dados['Taxa']
+
+    modelo = LinearRegression()
+    modelo.fit(X, y)
+
+    taxa_prevista = modelo.predict(
+        pd.DataFrame({'Ano': [ano_previsao]})
+    )[0]
+
+    return taxa_prevista
 
 def grafico_previsao(nome_municipio: str, ano_previsao: int):
     fig, axs = plt.subplots(figsize=(17, 8))
-    df_melt = dataframe_modificado_ml()
-    media_analfabetismo, taxa_prevista = previsao_taxa_analfabetismo(nome_municipio, ano_previsao)
-    dados_historicos = df_melt[df_melt['Percentual Médio de não Alfabetizados'] == media_analfabetismo]
-    axs.plot(dados_historicos['Ano'], dados_historicos['Taxa'], 'o-', label='Dados Históricos', linewidth=2)
+    df = dataframe_previsao().copy()
+    dados= df[df['Município'] == nome_municipio].sort_values('Ano')
+
+    taxa_prevista = previsao_taxa_analfabetismo(nome_municipio, ano_previsao)
+
+    axs.plot(dados['Ano'], dados['Taxa'], 'o-', label='Dados Históricos', linewidth=2)
     axs.plot(ano_previsao, taxa_prevista, 'rs', label=f'Previsão {ano_previsao}', markersize=10)
     axs.set_xlabel('Ano')
     axs.set_ylabel('Taxa de Analfabetismo (%)')

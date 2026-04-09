@@ -3,6 +3,7 @@ from pathlib import Path
 import streamlit as st
 from analise import *
 from clusters import *
+from limpeza import *
 
 st.title("Análise de Dados Sociais com Python")
 
@@ -136,7 +137,7 @@ sessao_algoritmos_regressao.markdown(
 )
 sessao_regressao_linear = sessao_algoritmos_regressao.container(border=True)
 sessao_regressao_linear.pyplot(
-    fig = modelo_regressao_linear()[-1],
+    fig = modelo_regressao_linear()[2],
     width="stretch"   
 )
 sessao_regressao_linear.markdown(
@@ -172,7 +173,7 @@ sessao_algoritmos_regressao.markdown(
 
 sessao_random_forest = sessao_algoritmos_regressao.container(border=True)
 sessao_random_forest.pyplot(
-    fig = modelo_random_forest()[-2],
+    fig = modelo_random_forest()[2],
     width="stretch"
 )
 sessao_random_forest.markdown(
@@ -212,9 +213,13 @@ ano_escolhido = sessao_previsao_taxa.number_input(
     min_value = 2023
 )
 
+taxa_prevista = previsao_taxa_analfabetismo(
+    municipio_escolhido,
+    ano_escolhido
+)
 
 sessao_previsao_taxa.text(
-    f"Taxa prevista para o ano de {ano_escolhido}: {previsao_taxa_analfabetismo(municipio_escolhido, ano_escolhido)[-1]:.2f}%"
+    f"Taxa prevista para o ano de {ano_escolhido}: {taxa_prevista:.2f}%"
 )
 sessao_previsao_taxa.pyplot(
     fig = grafico_previsao(municipio_escolhido, ano_escolhido),

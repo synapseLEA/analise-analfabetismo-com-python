@@ -55,22 +55,65 @@ def limpezaDataframe() -> DataFrame:
     # Retorna o DataFrame limpo e com as novas colunas
     return df
 
+
+#Cria um DataFrame tratado para aplicar modelos de aprendizado de máquina
 def dataframe_modificado_ml() -> DataFrame:
     df = limpezaDataframe()
+    
+    #Remove as colunas de valores não numéricos
     colunas_remover = ['Município',
                    'Sigla',
                    'Código',
                    'Percentual Médio de Alfabetizados']
+    
+    #Renomeia colunas para facilitar a chamada das colunas
     colunas_renomear = {
         '1991 (%)' : '1991',
         '2000 (%)' : '2000',
         '2010 (%)' : '2010',
         '2022 (%)' : '2022'
     }
+    
+    #Removendo as colunas no DataFrame
     df = df.drop(columns=colunas_remover)
+    
+    #Renomeando as colunas no DataFrame
     df = df.rename(columns=colunas_renomear)
+    
+    #Transforma os anos em linhas, mantendo a média como identificador
     df_alterado = df.melt(id_vars = 'Percentual Médio de não Alfabetizados',
                   value_name = 'Taxa', var_name= 'Ano')
+    
+    #Certifica que a coluna de ano são números inteiros
     df_alterado['Ano'] = df_alterado['Ano'].astype(int)
+    
+    #Retorna DataFrame atualizado para o uso de aprendizado de máquina
     return df_alterado
 
+def dataframe_previsao():
+    df = limpezaDataframe().copy()
+
+    colunas_remover = ['Sigla',
+                   'Código']
+    
+    df = df.drop(columns=colunas_remover)
+    
+    colunas_renomear = {
+        '1991 (%)' : '1991',
+        '2000 (%)' : '2000',
+        '2010 (%)' : '2010',
+        '2022 (%)' : '2022'
+    }
+
+    df = df.rename(columns=colunas_renomear)
+
+    df_melt = df.melt(
+        id_vars=['Município', 'Percentual Médio de não Alfabetizados'],
+        value_vars=['1991', '2000', '2010', '2022'],
+        var_name='Ano',
+        value_name='Taxa'
+    )
+
+    df_melt['Ano'] = df_melt['Ano'].astype(int)
+
+    return df_melt
